@@ -67,13 +67,33 @@ namespace chilco
         }
 
         /// <summary>
+        /// removes the .disabled after the filename.
+        /// ex. : firefox.exe.disabled --> firefox.exe
+        /// </summary>
+        public void Enable()
+        {
+            File.Move(ExePath + ".disabled", ExePath);
+        }
+
+        /// <summary>
         /// Saves the time that is left over to a file.
         /// </summary>
         public void SaveLeftoverTime()
         {
-            File.WriteAllText(LogsPath + Path.GetFileName(ExePath) + ".txt", "" + (MaxPlaytime + LeftoverTime - ProcessTime.ElapsedMilliseconds));
+            File.WriteAllText(LogsPath + Path.GetFileName(ExePath) + ".txt",DateTime.Today.ToShortDateString() + "\n" + (MaxPlaytime + LeftoverTime - ProcessTime.ElapsedMilliseconds));
         }
-
+        /// <summary>
+        /// Loads Leftover Time from last session, adds MaxPlaytime to LeftoverTime for each day spent without Playing.
+        /// </summary>
+        public void LoadLeftoverTime()
+        {
+            string[] file = File.ReadAllLines(LogsPath + Path.GetFileName(ExePath) + ".txt");
+            string[] date = file[0].Split('.');
+            DateTime LastStartup = new DateTime(Int32.Parse(date[3]), Int32.Parse(date[2]), Int32.Parse(date[1]));
+            TimeSpan TimeSinceLastStartup = DateTime.Today - LastStartup;
+            int DaysSinceLastStartup = TimeSinceLastStartup.Days;
+            LeftoverTime = DaysSinceLastStartup * MaxPlaytime + Int32.Parse(file[1]);
+        }
         /// <summary>
         /// checks if the process is currently running
         /// </summary>
