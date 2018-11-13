@@ -7,15 +7,15 @@ Features:
 
 [ ]Core
 
-  [ ]Multiple programs.
+--[ ]Multiple programs.
   
-  [ ]Saving up playtime.
+--[ ]Saving up playtime.
   
-  [ ]Limiter for saving up playtime.
+--[ ]Limiter for saving up playtime.
   
   
 [ ]Settings GUI
 
-  [ ]GUI password restriction.
+--[ ]GUI password restriction.
   
 
