@@ -26,6 +26,7 @@ namespace chilco
                 ProcessTime.Start();
                 if (ProcessTime.ElapsedMilliseconds > MaxPlaytime + LeftoverTime)
                 {
+                    KillProcess();
                     Disable();
                 }
             }
@@ -34,6 +35,7 @@ namespace chilco
                 ProcessTime.Stop();
             }
         }
+
         public void Disable()
         {
             File.Move(ExePath, ExePath + ".disabled");
@@ -53,6 +55,14 @@ namespace chilco
             else
             {
                 return false;
+            }
+        }
+        private void KillProcess()
+        {
+            foreach (var process in Process.GetProcessesByName(Path.GetFileName(ExePath)))
+            {
+                if (Process.GetProcessesByName(Path.GetFileName(ExePath)).Length > 0)
+                    process.Kill();
             }
         }
     }
