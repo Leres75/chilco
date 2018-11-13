@@ -11,7 +11,7 @@ namespace chilco
         #region Attributes
         private string ExePath;
         public static string LogsPath { get; set; }
-        private long MaxPlaytime { get; set; }
+        private long MaxPlaytime { get; set; } = TimeConvert.MinToMillis(30);
         public long LeftoverTime;
         public Stopwatch ProcessTime = new Stopwatch();
         #endregion Attributes
@@ -21,26 +21,39 @@ namespace chilco
         public ProcessManager(string ExePath)
         {
             this.ExePath = ExePath;
-            this.MaxPlaytime = TimeConvert.MinToMillis(30);
+            LoadLeftoverTime();
+            if (LeftoverTime > 0) Enable();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ExePath">Path to the exe</param>
+        /// <param name="MaxPlaytime">Maxmimum Playtime in Milliseconds</param>
         public ProcessManager(string ExePath, long MaxPlaytime)
         {
             this.ExePath = ExePath;
             this.MaxPlaytime = MaxPlaytime;
+            LoadLeftoverTime();
+            if (LeftoverTime > 0) Enable();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ExePath">Path to the exe</param>
+        /// <param name="MaxPlaytime">Maxmimum Playtime in Minutes</param>
         public ProcessManager(string ExePath, int MaxPlaytime)
         {
             this.ExePath = ExePath;
             this.MaxPlaytime = TimeConvert.MinToMillis(MaxPlaytime);
+            LoadLeftoverTime();
         }
 
         #endregion Konstruktor
 
         public void Update()
         {
-
             if (ProcessTime.IsRunning) SaveLeftoverTime();
             if (ExeIsRunning())
             {
@@ -72,7 +85,8 @@ namespace chilco
         /// </summary>
         public void Enable()
         {
-            File.Move(ExePath + ".disabled", ExePath);
+            if(File.Exists(ExePath + ".disabled"))
+                File.Move(ExePath + ".disabled", ExePath);
         }
 
         /// <summary>
