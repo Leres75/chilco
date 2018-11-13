@@ -47,13 +47,24 @@ namespace chilco
         }
 
         /// <summary>
+        /// removes the .disabled after the filename.
+        /// ex. : firefox.exe.disabled --> firefox.exe
+        /// </summary>
+        public void Enable()
+        {
+            File.Move(ExePath + ".disabled", ExePath);
+        }
+
+        /// <summary>
         /// Saves the time that is left over to a file.
         /// </summary>
         public void SaveLeftoverTime()
         {
             File.WriteAllText(LogsPath + Path.GetFileName(ExePath) + ".txt",DateTime.Today.ToShortDateString() + "\n" + (MaxPlaytime + LeftoverTime - ProcessTime.ElapsedMilliseconds));
         }
-
+        /// <summary>
+        /// Loads Leftover Time from last session, adds MaxPlaytime to LeftoverTime for each day spent without Playing.
+        /// </summary>
         public void LoadLeftoverTime()
         {
             string[] file = File.ReadAllLines(LogsPath + Path.GetFileName(ExePath) + ".txt");
