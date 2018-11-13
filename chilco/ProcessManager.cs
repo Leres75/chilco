@@ -9,36 +9,51 @@ namespace chilco
     class ProcessManager
     {
         public string ExePath;
-        public string LogPath;
+        public static string LogsPath;
+        public long MaxPlaytime;
+        public long LeftoverTime;
         public Stopwatch ProcessTime = new Stopwatch();
         public ProcessManager(string ExePath)
         {
             this.ExePath = ExePath;
         }
-
-        public ProcessManager(string ExePath, string LogPath)
+        
+        public void Update()
         {
-            this.ExePath = ExePath;
-            this.LogPath = LogPath;
+            if (ProcessTime.IsRunning) SaveLeftoverTime();
+            if (ExeIsRunning())
+            {
+                ProcessTime.Start();
+                if (ProcessTime.ElapsedMilliseconds > MaxPlaytime + LeftoverTime)
+                {
+                    Disable();
+                }
+            }
+            else
+            {
+                ProcessTime.Stop();
+            }
         }
-
         public void Disable()
         {
-            System.IO.File.Move(ExePath, ExePath + ".disabled");
+            File.Move(ExePath, ExePath + ".disabled");
         }
 
-        public bool IsRunning()
+        public void SaveLeftoverTime()
+        {
+            File.WriteAllText(LogsPath + Path.GetFileName(ExePath) + ".txt", "" + (MaxPlaytime + LeftoverTime - ProcessTime.ElapsedMilliseconds));
+        }
+
+        public bool ExeIsRunning()
         {
             if (Process.GetProcessesByName(Path.GetFileName(ExePath)).Length > 0)
             {
-                if (!ProcessTime.IsRunning) ProcessTime.Start();
                 return true;
             }
             else
             {
-                if (ProcessTime.IsRunning) ProcessTime.Stop();
+                return false;
             }
-            return false;
         }
     }
 }
