@@ -8,19 +8,39 @@ namespace chilco
 {
     class ProcessManager
     {
-        public string ExePath;
-        public static string LogsPath;
-        public long MaxPlaytime;
+        #region Attributes
+        private string ExePath;
+        public static string LogsPath { get; set; }
+        private long MaxPlaytime { get; set; }
         public long LeftoverTime;
         public Stopwatch ProcessTime = new Stopwatch();
+        #endregion Attributes
+
+        #region Konstruktor
 
         public ProcessManager(string ExePath)
         {
             this.ExePath = ExePath;
+            this.MaxPlaytime = TimeConvert.MinToMillis(30);
         }
-        
+
+        public ProcessManager(string ExePath, long MaxPlaytime)
+        {
+            this.ExePath = ExePath;
+            this.MaxPlaytime = MaxPlaytime;
+        }
+
+        public ProcessManager(string ExePath, int MaxPlaytime)
+        {
+            this.ExePath = ExePath;
+            this.MaxPlaytime = TimeConvert.MinToMillis(MaxPlaytime);
+        }
+
+        #endregion Konstruktor
+
         public void Update()
         {
+
             if (ProcessTime.IsRunning) SaveLeftoverTime();
             if (ExeIsRunning())
             {
