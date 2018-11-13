@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -25,7 +25,7 @@ namespace chilco
             if (ExeIsRunning())
             {
                 ProcessTime.Start();
-                if (ProcessTime.ElapsedMilliseconds > MaxPlaytime + LeftoverTime)
+                if (ProcessTime.ElapsedMilliseconds > LeftoverTime)
                 {
                     KillProcess();
                     Disable();
@@ -60,7 +60,7 @@ namespace chilco
         /// </summary>
         public void SaveLeftoverTime()
         {
-            File.WriteAllText(LogsPath + Path.GetFileName(ExePath) + ".txt",DateTime.Today.ToShortDateString() + "\n" + (MaxPlaytime + LeftoverTime - ProcessTime.ElapsedMilliseconds));
+            File.WriteAllText(LogsPath + Path.GetFileName(ExePath) + ".txt",DateTime.Today.ToShortDateString() + "\n" + (LeftoverTime - ProcessTime.ElapsedMilliseconds));
         }
         /// <summary>
         /// Loads Leftover Time from last session, adds MaxPlaytime to LeftoverTime for each day spent without Playing.
@@ -72,7 +72,7 @@ namespace chilco
             DateTime LastStartup = new DateTime(Int32.Parse(date[3]), Int32.Parse(date[2]), Int32.Parse(date[1]));
             TimeSpan TimeSinceLastStartup = DateTime.Today - LastStartup;
             int DaysSinceLastStartup = TimeSinceLastStartup.Days;
-            LeftoverTime = DaysSinceLastStartup * MaxPlaytime + Int32.Parse(file[1]);
+            LeftoverTime = (DaysSinceLastStartup + 1) * MaxPlaytime + Int32.Parse(file[1]);
         }
         /// <summary>
         /// checks if the process is currently running
