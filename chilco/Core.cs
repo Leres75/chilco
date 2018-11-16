@@ -2,7 +2,7 @@
 
 namespace chilco
 {
-    class Program
+    class Core
     {
         static void Main(string[] args)
         {
