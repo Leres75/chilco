@@ -9,12 +9,21 @@ namespace chilco
     {
         private string SettingsPath = @".properties";
         private string[] properties;                    // @[0] is the Hash of the Password
-                                                        //
+                                                        // @[1] is the Path for the ProcessManager Log files
         public void Load()
         {
             properties = System.IO.File.ReadAllLines(SettingsPath);
         }
+        public string GetLogPath()
+        {
+            return properties[1];
+        }
 
+        public void SetLogPath(String LogPath)
+        {
+            properties[1] = LogPath;
+            SaveProperties();
+        }
         public bool CheckPassword(string password)
         {
             string inputedHash = GetSha256Hash(SHA256.Create(), password);
