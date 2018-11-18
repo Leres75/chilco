@@ -7,45 +7,58 @@ namespace chilco.UnitTests
     public class TimeConvertTests
     {
         [Fact]
-        public static void MinToMillis_ValEquals1_Returns60000()
+        public static void MinToMillis_1_60000()
         {
                 Assert.Equal(60000, TimeConvert.MinutesToMillis(1));
         }
 
         [Fact]
-        public static void MillisToSeconds_ValEquals1000_Returns1()
+        public static void MillisToSeconds_1000_1()
         {
             Assert.Equal(1, TimeConvert.MillisToSeconds(1000));
         }
 
         [Fact]
-        public static void SecondsToMillis_ValEquals1_Returns1000()
+        public static void SecondsToMillis_1_1000()
         {
             Assert.Equal(1000, TimeConvert.SecondsToMillis(1));
         }
 
         [Fact]
-        public static void SecondsToMinutes_ValEquals60_Returns1()
+        public static void SecondsToMinutes_60_1()
         {
             Assert.Equal(1, TimeConvert.SecondsToMinutes(60));
         }
 
         [Fact]
-        public static void MinutesToSeconds_ValEquals1_Returns60()
+        public static void MinutesToSeconds_1_60()
         {
             Assert.Equal(60, TimeConvert.MinutesToSeconds(1));
         }
 
         [Fact]
-        public static void MinutesToHours_ValEquals60_Returns1()
+        public static void MinutesToHours_60_1()
         {
             Assert.Equal(1, TimeConvert.MinutesToHours(60));
         }
 
         [Fact]
-        public static void HoursToMinutes_ValEquals1_Returns60()
+        public static void HoursToMinutes_1_60()
         {
             Assert.Equal(60, TimeConvert.HoursToMinutes(1));
         }
+
+        [Fact]
+        public static void InputIsValid_10_True()
+        {
+            Assert.True(TimeConvert.InputIsValid(10));
+        }
+
+        [Fact]
+        public static void InputIsValid_negative10_False()
+        {
+            Assert.False(TimeConvert.InputIsValid(-10));
+        }
+
     }
 }

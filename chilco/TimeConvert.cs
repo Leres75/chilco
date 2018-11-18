@@ -72,7 +72,7 @@
             return -1;
         }
 
-        private static bool InputIsValid(double input)
+        public static bool InputIsValid(double input)
         {
             return !(input <= 0);
         }
