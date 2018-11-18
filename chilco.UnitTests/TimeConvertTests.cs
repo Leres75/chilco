@@ -45,17 +45,5 @@ namespace chilco.UnitTests
         {
             Assert.Equal(60, TimeConvert.HoursToMinutes(1));
         }
-
-        [Fact]
-        public static void InputIsValid_1_True()
-        {
-            Assert.True(TimeConvert.InputIsValid(1));
-        }
-
-        [Fact]
-        public static void InputIsValid_negative1_False()
-        {
-            Assert.False(TimeConvert.InputIsValid(-1));
-        }
     }
 }
