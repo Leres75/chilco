@@ -1,6 +1,4 @@
-using System;
 using Xunit;
-using chilco;
 
 namespace chilco.UnitTests
 {
@@ -9,7 +7,7 @@ namespace chilco.UnitTests
         [Fact]
         public static void MinToMillis_1_60000()
         {
-                Assert.Equal(60000, TimeConvert.MinutesToMillis(1));
+            Assert.Equal(60000, TimeConvert.MinutesToMillis(1));
         }
 
         [Fact]
@@ -49,16 +47,15 @@ namespace chilco.UnitTests
         }
 
         [Fact]
-        public static void InputIsValid_10_True()
+        public static void InputIsValid_1_True()
         {
-            Assert.True(TimeConvert.InputIsValid(10));
+            Assert.True(TimeConvert.InputIsValid(1));
         }
 
         [Fact]
-        public static void InputIsValid_negative10_False()
+        public static void InputIsValid_negative1_False()
         {
-            Assert.False(TimeConvert.InputIsValid(-10));
+            Assert.False(TimeConvert.InputIsValid(-1));
         }
-
     }
 }
