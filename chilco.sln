@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28306.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chilco", "chilco\chilco.csproj", "{35E51F8C-21A9-4612-9AA5-537A134FF3D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chilco", "chilco\chilco.csproj", "{35E51F8C-21A9-4612-9AA5-537A134FF3D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chilco.UnitTests", "chilco.UnitTests\chilco.UnitTests.csproj", "{0FE6FF59-1B5E-4A5F-8E4F-46E6F2F1DAAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{35E51F8C-21A9-4612-9AA5-537A134FF3D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35E51F8C-21A9-4612-9AA5-537A134FF3D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35E51F8C-21A9-4612-9AA5-537A134FF3D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FE6FF59-1B5E-4A5F-8E4F-46E6F2F1DAAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FE6FF59-1B5E-4A5F-8E4F-46E6F2F1DAAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FE6FF59-1B5E-4A5F-8E4F-46E6F2F1DAAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FE6FF59-1B5E-4A5F-8E4F-46E6F2F1DAAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

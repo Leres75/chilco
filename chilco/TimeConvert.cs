@@ -1,24 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace chilco
+﻿namespace chilco
 {
     public static class TimeConvert
     {
-        public static long MinToMillis(int minutes)
+
+
+        public static double MillisToSeconds(double millis)
         {
-            return minutes * 60_000;
+            if (InputIsValid(millis))
+            {
+                return millis / 1000;
+            }
+            return -1;
         }
 
-        public static int MillisToSeconds(long millis)
+        public static double SecondsToMillis(double seconds)
         {
-            return (int)millis / 60_000;
+            if (InputIsValid(seconds))
+            {
+                return seconds * 1000;
+            }
+            return -1;
         }
 
-        public static int MillisToHours(long millis)
+        public static double SecondsToMinutes(double seconds)
         {
-            return (int)millis / 3_600_000;
+            if (InputIsValid(seconds))
+            {
+                return seconds / 60;
+            }
+            return -1;
+        }
+
+        public static double MinutesToSeconds(double minutes)
+        {
+            if (InputIsValid(minutes))
+            {
+                return minutes * 60;
+            }
+            return -1;
+        }
+
+        public static double MinutesToHours(double minutes)
+        {
+            if (InputIsValid(minutes))
+            {
+                return minutes / 60;
+            }
+            return -1;
+        }
+
+        public static double HoursToMinutes(double hours)
+        {
+            if (InputIsValid(hours))
+            {
+                return hours * 60;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        ///Converts the given value of minutes doubleo milliseconds
+        /// </summary>
+        /// <param name="minutes"></param>
+        /// <returns>given minutes in milliseconds</returns>
+        public static double MinutesToMillis(double minutes)
+        {
+            if (InputIsValid(minutes))
+            {
+                return minutes * 60_000;
+            }
+            return -1;
+        }
+
+        private static bool InputIsValid(double input)
+        {
+            return !(input <= 0);
         }
     }
 }

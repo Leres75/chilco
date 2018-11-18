@@ -2,10 +2,11 @@
 
 namespace chilco
 {
-    class Core
+    internal class Core
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
+            //better be scared, better be prepared
             Console.WriteLine("Hello World!");
         }
     }

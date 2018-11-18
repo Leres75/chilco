@@ -1,35 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
 namespace chilco
 {
-    class Settings
+    internal class Settings
     {
-        private string SettingsPath = @".properties";
-        private string[] properties;                    // @[0] is the Hash of the Password
-                                                        // @[1] is the Path for the ProcessManager Log files
+        private string LogPath
+        {
+            get { return properties[1]; }
+            set
+            {
+                this.LogPath = value;
+                SaveProperties();
+            }
+        }
+        private readonly string SettingsPath = @".properties";
+        private string[] properties = new string[2];     // @[0] is the Hash of the Password
+                                                         // @[1] is the Path for the ProcessManager Log files
+
         public void Load()
         {
             properties = System.IO.File.ReadAllLines(SettingsPath);
         }
-        public string GetLogPath()
-        {
-            return properties[1];
-        }
 
-        public void SetLogPath(String LogPath)
-        {
-            properties[1] = LogPath;
-            SaveProperties();
-        }
         public bool CheckPassword(string password)
         {
             string inputedHash = GetSha256Hash(SHA256.Create(), password);
             string savedHash = properties[0];
-            if (inputedHash.Equals(savedHash)) return true;
-            else return false;
+            return inputedHash.Equals(savedHash);// || true xD
         }
 
         public void ChangePassword(string NewPassword)
@@ -44,7 +42,7 @@ namespace chilco
             System.IO.File.WriteAllLines(SettingsPath, properties);
         }
 
-        static string GetSha256Hash(SHA256 shaHash, string input)
+        private static string GetSha256Hash(SHA256 shaHash, string input)
         {
             // Convert the input string to a byte array and compute the hash.
             byte[] data = shaHash.ComputeHash(Encoding.UTF8.GetBytes(input));
@@ -53,7 +51,7 @@ namespace chilco
             // and create a string.
             StringBuilder sBuilder = new StringBuilder();
 
-            // Loop through each byte of the hashed data 
+            // Loop through each byte of the hashed data
             // and format each one as a hexadecimal string.
             for (int i = 0; i < data.Length; i++)
             {
@@ -63,6 +61,5 @@ namespace chilco
             // Return the hexadecimal string.
             return sBuilder.ToString();
         }
-
     }
 }

@@ -1,19 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
 namespace chilco
 {
-    class ProcessManager
+    internal class ProcessManager
     {
         #region Attributes
-        private string ExePath;
+
+        private readonly string ExePath;
+        private bool IsDisabled { get; set; } = false;
         public static string LogsPath { get; set; }
-        private long MaxPlaytime { get; set; } = TimeConvert.MinToMillis(30);
+        private long MaxPlaytime { get; set; } = (long)TimeConvert.MinutesToMillis(30); //!!converting double to long!!
         public long LeftoverTime;
         public Stopwatch ProcessTime = new Stopwatch();
+
         #endregion Attributes
 
         #region Konstruktor
@@ -22,11 +23,14 @@ namespace chilco
         {
             this.ExePath = ExePath;
             LoadLeftoverTime();
-            if (LeftoverTime > 0) Enable();
+            if (LeftoverTime > 0)
+            {
+                Enable();
+            }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ExePath">Path to the exe</param>
         /// <param name="MaxPlaytime">Maxmimum Playtime in Milliseconds</param>
@@ -35,18 +39,21 @@ namespace chilco
             this.ExePath = ExePath;
             this.MaxPlaytime = MaxPlaytime;
             LoadLeftoverTime();
-            if (LeftoverTime > 0) Enable();
+            if (LeftoverTime > 0)
+            {
+                Enable();
+            }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ExePath">Path to the exe</param>
         /// <param name="MaxPlaytime">Maxmimum Playtime in Minutes</param>
         public ProcessManager(string ExePath, int MaxPlaytime)
         {
             this.ExePath = ExePath;
-            this.MaxPlaytime = TimeConvert.MinToMillis(MaxPlaytime);
+            this.MaxPlaytime = (long)TimeConvert.MinutesToMillis(MaxPlaytime);
             LoadLeftoverTime();
         }
 
@@ -54,7 +61,11 @@ namespace chilco
 
         public void Update()
         {
-            if (ProcessTime.IsRunning) SaveLeftoverTime();
+            if (ProcessTime.IsRunning)
+            {
+                SaveLeftoverTime();
+            }
+
             if (ExeIsRunning())
             {
                 ProcessTime.Start();
@@ -76,6 +87,7 @@ namespace chilco
         /// </summary>
         public void Disable()
         {
+            this.IsDisabled = true;
             File.Move(ExePath, ExePath + ".disabled");
         }
 
@@ -85,8 +97,14 @@ namespace chilco
         /// </summary>
         public void Enable()
         {
-            if(File.Exists(ExePath + ".disabled"))
-                File.Move(ExePath + ".disabled", ExePath);
+            if (this.IsDisabled)
+            {
+                if (File.Exists(ExePath + ".disabled"))
+                {
+                    File.Move(ExePath + ".disabled", ExePath);
+                    this.IsDisabled = false;
+                }
+            }
         }
 
         /// <summary>
@@ -94,8 +112,11 @@ namespace chilco
         /// </summary>
         public void SaveLeftoverTime()
         {
-            File.WriteAllText(LogsPath + Path.GetFileName(ExePath) + ".txt",DateTime.Today.ToShortDateString() + "\n" + (LeftoverTime - ProcessTime.ElapsedMilliseconds));
+            File.WriteAllText(LogsPath + Path.GetFileName(ExePath) 
+                + ".txt", DateTime.Today.ToShortDateString() 
+                + "\n" + (LeftoverTime - ProcessTime.ElapsedMilliseconds));
         }
+
         /// <summary>
         /// Loads Leftover Time from last session, adds MaxPlaytime to LeftoverTime for each day spent without Playing.
         /// </summary>
@@ -103,35 +124,29 @@ namespace chilco
         {
             string[] file = File.ReadAllLines(LogsPath + Path.GetFileName(ExePath) + ".txt");
             string[] date = file[0].Split('.');
-            DateTime LastStartup = new DateTime(Int32.Parse(date[3]), Int32.Parse(date[2]), Int32.Parse(date[1]));
+            DateTime LastStartup = new DateTime(int.Parse(date[3]), int.Parse(date[2]), int.Parse(date[1]));
             TimeSpan TimeSinceLastStartup = DateTime.Today - LastStartup;
             int DaysSinceLastStartup = TimeSinceLastStartup.Days;
-            LeftoverTime = (DaysSinceLastStartup + 1) * MaxPlaytime + Int32.Parse(file[1]);
+            LeftoverTime = (DaysSinceLastStartup + 1) * MaxPlaytime + int.Parse(file[1]);
         }
+
         /// <summary>
         /// checks if the process is currently running
         /// </summary>
         /// <returns></returns>
-        public bool ExeIsRunning()
-        {
-            if (Process.GetProcessesByName(Path.GetFileName(ExePath)).Length > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        public bool ExeIsRunning() => Process.GetProcessesByName(Path.GetFileName(ExePath)).Length > 0;
+
         /// <summary>
         /// kills the process.
         /// </summary>
         private void KillProcess()
         {
-            foreach (var process in Process.GetProcessesByName(Path.GetFileName(ExePath)))
+            foreach (Process process in Process.GetProcessesByName(Path.GetFileName(ExePath)))
             {
-                if (Process.GetProcessesByName(Path.GetFileName(ExePath)).Length > 0)
+                if (ExeIsRunning())
+                {
                     process.Kill();
+                }
             }
         }
     }
