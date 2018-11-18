@@ -7,6 +7,9 @@ namespace chilco
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            Settings.Load();
+            Settings.LoadProcessManagerProperties();
+            Console.ReadKey();
         }
     }
 }
