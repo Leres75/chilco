@@ -1,23 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace chilco
 {
-    class Settings
+    internal class Settings
     {
         private static string SettingsPath = @".properties";
-        private static string[] properties;                    // @[0] is the Hash of the Password
-                                                        // @[1] is the Path for the ProcessManager Log files
-                                                        // From [2] to [x]="end Processes" -- ProcessInformation
-                                                        //[n] = ExePath
-                                                        //[n+1] = PlayTime
-        private static string[,] ProcessManagerProperties;
+
+        /// <summary>
+        /// @[0] is the Hash of the Password
+        /// @[1] is the Path for the ProcessManager Log files
+        /// From [2] to [x]="end Processes" -- ProcessInformation
+        /// [n] = ExePaths, separated by a ','
+        /// [n+1] = PlayTime
+        /// </summary>
+        private static string[] properties;
+
+        public static string[,] ProcessManagerProperties;
+
         public static void Load()
         {
             properties = System.IO.File.ReadAllLines(SettingsPath);
         }
+
         public static void LoadProcessManagerProperties()
         {
             int i = 2;
@@ -25,20 +31,15 @@ namespace chilco
             {
                 i++;
             }
-            string[,] output = new string[i/2, 2];
+            string[,] output = new string[i / 2, 2];
             i = 2;
             while (properties[i] != "end Processes")
             {
                 output[(i - 2) / 2, i % 2] = properties[i];
                 i++;
             }
-            foreach (string item in properties)
-            {
-            }
-            foreach (string d in output)
-            {
-            }
         }
+
         public static string GetLogPath()
         {
             return properties[1];
