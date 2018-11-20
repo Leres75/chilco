@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace chilco
 {
     internal class Core
     {
-        private static void Main(string[] args)
-        {
-            //better be scared, better be prepared
-            Console.WriteLine("Hello World!");
-        }
+        List<SingleProcessManager> programs = new List<SingleProcessManager>();
+
+
+
+
+
     }
 }

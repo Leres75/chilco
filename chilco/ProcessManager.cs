@@ -4,7 +4,7 @@ using System.IO;
 
 namespace chilco
 {
-    internal class ProcessManager
+    internal class SingleProcessManager
     {
         #region Attributes
 
@@ -19,7 +19,7 @@ namespace chilco
 
         #region Konstruktor
 
-        public ProcessManager(string ExePath)
+        public SingleProcessManager(string ExePath)
         {
             this.ExePath = ExePath;
             LoadLeftoverTime();
@@ -34,7 +34,7 @@ namespace chilco
         /// </summary>
         /// <param name="ExePath">Path to the exe</param>
         /// <param name="MaxPlaytime">Maxmimum Playtime in Milliseconds</param>
-        public ProcessManager(string ExePath, long MaxPlaytime)
+        public SingleProcessManager(string ExePath, long MaxPlaytime)
         {
             this.ExePath = ExePath;
             this.MaxPlaytime = MaxPlaytime;
@@ -50,7 +50,7 @@ namespace chilco
         /// </summary>
         /// <param name="ExePath">Path to the exe</param>
         /// <param name="MaxPlaytime">Maxmimum Playtime in Minutes</param>
-        public ProcessManager(string ExePath, int MaxPlaytime)
+        public SingleProcessManager(string ExePath, int MaxPlaytime)
         {
             this.ExePath = ExePath;
             this.MaxPlaytime = (long)TimeConvert.MinutesToMillis(MaxPlaytime);
@@ -149,5 +149,17 @@ namespace chilco
                 }
             }
         }
+
+        private void AddBonusTime(int amount) {
+            if(amount > 0)
+            LeftoverTime += amount;
+        }
+
+        private void CutDownTime(int amount)
+        {
+            if (amount < 0)
+            LeftoverTime -= amount;
+        }
+
     }
 }

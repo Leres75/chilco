@@ -16,7 +16,7 @@ namespace chilco
         }
         private readonly string SettingsPath = @".properties";
         private string[] properties = new string[2];     // @[0] is the Hash of the Password
-                                                         // @[1] is the Path for the ProcessManager Log files
+                                                         // @[1] is the Path for the SingleProcessManager Log files
 
         public void Load()
         {
