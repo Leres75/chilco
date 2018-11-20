@@ -5,7 +5,14 @@ namespace chilco
 {
     internal class Settings
     {
-        private string LogPath
+        private static string SettingsPath = @".properties";
+        private static string[] properties;                    // @[0] is the Hash of the Password
+                                                        // @[1] is the Path for the ProcessManager Log files
+                                                        // From [2] to [x]="end Processes" -- ProcessInformation
+                                                        //[n] = ExePath
+                                                        //[n+1] = PlayTime
+        private static string[,] ProcessManagerProperties;
+        public static void Load()
         {
             get { return properties[1]; }
             set
@@ -14,35 +21,56 @@ namespace chilco
                 SaveProperties();
             }
         }
-        private readonly string SettingsPath = @".properties";
-        private string[] properties = new string[2];     // @[0] is the Hash of the Password
-                                                         // @[1] is the Path for the SingleProcessManager Log files
+        public static void LoadProcessManagerProperties()
+        {
+            int i = 2;
+            while (properties[i] != "end Processes")
+            {
+                i++;
+            }
+            string[,] output = new string[i/2, 2];
+            i = 2;
+            while (properties[i] != "end Processes")
+            {
+                output[(i - 2) / 2, i % 2] = properties[i];
+                i++;
+            }
+            foreach (string item in properties)
+            {
+            }
+            foreach (string d in output)
+            {
+            }
+        }
+        public static string GetLogPath()
+        {
+            return properties[1];
+        }
 
-        public void Load()
+        public static void SetLogPath(String LogPath)
         {
             properties = System.IO.File.ReadAllLines(SettingsPath);
         }
-
-        public bool CheckPassword(string password)
+        public static bool CheckPassword(string password)
         {
             string inputedHash = GetSha256Hash(SHA256.Create(), password);
             string savedHash = properties[0];
             return inputedHash.Equals(savedHash);// || true xD
         }
 
-        public void ChangePassword(string NewPassword)
+        public static void ChangePassword(string NewPassword)
         {
             string inputedHash = GetSha256Hash(SHA256.Create(), NewPassword);
             properties[0] = inputedHash;
             SaveProperties();
         }
 
-        public void SaveProperties()
+        public static void SaveProperties()
         {
             System.IO.File.WriteAllLines(SettingsPath, properties);
         }
 
-        private static string GetSha256Hash(SHA256 shaHash, string input)
+        public static string GetSha256Hash(SHA256 shaHash, string input)
         {
             // Convert the input string to a byte array and compute the hash.
             byte[] data = shaHash.ComputeHash(Encoding.UTF8.GetBytes(input));
