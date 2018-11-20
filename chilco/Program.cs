@@ -10,6 +10,9 @@ namespace chilco
         {
             //better be scared, better be prepared
             Console.WriteLine("Hello World!");
+            Settings.Load();
+            Console.ReadKey();
+            Settings.LoadProcessManagerProperties();
         }
     }
 }
