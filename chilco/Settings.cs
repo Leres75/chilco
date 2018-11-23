@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+using System;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace chilco
@@ -6,37 +7,44 @@ namespace chilco
     internal class Settings
     {
         private static string SettingsPath = @".properties";
-        private static string[] properties;                    // @[0] is the Hash of the Password
-                                                               // @[1] is the Path for the ProcessManager Log files
-                                                               // From [2] to [x]="end Processes" -- ProcessInformation
-                                                               //[n] = ExePath
-                                                               //[n+1] = PlayTime
-        private static string[,] ProcessManagerProperties;
+
+        /// <summary>
+        /// @[0] is the Hash of the Password
+        /// @[1] is the Path for the ProcessManager Log files
+        /// From [2] to [x]="end Processes" -- ProcessInformation
+        /// [n] = ProcessGroupName
+        /// [n+1] = ExePaths, separated by a ','
+        /// [n+2] = PlayTime in ms
+        /// </summary>
+        public static string[] properties;
+
+        public static string[,] ProcessManagerProperties;
+
         public static void Load()
         {
             properties = System.IO.File.ReadAllLines(SettingsPath);
         }
+
         public static void LoadProcessManagerProperties()
         {
-            int i = 2;
+            int i = 1;
             while (properties[i] != "end Processes")
             {
                 i++;
             }
-            string[,] output = new string[i / 2, 2];
+            //Console.WriteLine(i);
+            string[,] output = new string[(i-2) / 3, 3];
+            //Console.WriteLine("["+ ((i - 2) / 3) + ", " + 3 + "]");
             i = 2;
             while (properties[i] != "end Processes")
             {
-                output[(i - 2) / 2, i % 2] = properties[i];
+                //Console.WriteLine("output[" + ((i - 2) / 3) + ", " + (i % 3) + "] = properties[" + i + "]");
+                output[(i - 2) / 3, (i-2) % 3] = properties[i];
                 i++;
             }
-            foreach (string item in properties)
-            {
-            }
-            foreach (string d in output)
-            {
-            }
+            ProcessManagerProperties = output;
         }
+
         public static string GetLogPath()
         {
             return properties[1];
@@ -64,7 +72,20 @@ namespace chilco
 
         public static void SaveProperties()
         {
-            System.IO.File.WriteAllLines(SettingsPath, properties);
+            int length = 2;
+            foreach (string s in ProcessManagerProperties) length++;
+            string[] output = new string[length + 1];
+            output[0] = properties[0];
+            output[1] = properties[1];
+            output[length] = "end Processes";
+            for (int i = 0; i < ProcessManagerProperties.GetLength(0); i++)
+            {
+                for (int k = 0; k < ProcessManagerProperties.GetLength(1); k++)
+                {
+                    output[i * ProcessManagerProperties.GetLength(1) + k + 2] = ProcessManagerProperties[i, k];
+                }
+            }
+            System.IO.File.WriteAllLines(SettingsPath, output);
         }
 
         public static string GetSha256Hash(SHA256 shaHash, string input)
