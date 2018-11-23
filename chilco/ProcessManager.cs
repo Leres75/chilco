@@ -56,7 +56,7 @@ namespace chilco
         {
             Console.WriteLine("int");
             this.ExePaths = ExePath;
-            this.MaxPlaytime = TimeConvert.MinToMillis(MaxPlaytime);
+            this.MaxPlaytime = (long) TimeConvert.MinutesToMillis((double) MaxPlaytime);
             this.ProcessGroupName = ProcessGroupName;
             if (File.Exists(LogsPath + ProcessGroupName + ".txt")) LoadLeftoverTime();
             else SaveLeftoverTime();
@@ -67,25 +67,31 @@ namespace chilco
 
         public void Update()
         {
-            if (ProcessTime.IsRunning) SaveLeftoverTime();
-            if (ExeAreRunning())
+            while (true)
             {
-                Console.WriteLine("true");
-                ProcessTime.Start();
-                Console.WriteLine(ProcessTime.ElapsedMilliseconds);
-                Console.WriteLine(LeftoverTime);
-                if (ProcessTime.ElapsedMilliseconds > LeftoverTime)
+                Thread.Sleep(1000);
+                Console.WriteLine("RUnning " + ProcessGroupName);
+                if (ProcessTime.IsRunning) SaveLeftoverTime();
+                if (ExeAreRunning())
                 {
-                    foreach (string ExePath in ExePaths)
-                        KillProcess(ExePath);
-                    Disable();
+                    Console.WriteLine("true");
+                    ProcessTime.Start();
+                    Console.WriteLine(ProcessTime.ElapsedMilliseconds);
+                    Console.WriteLine(LeftoverTime);
+                    if (ProcessTime.ElapsedMilliseconds > LeftoverTime)
+                    {
+                        foreach (string ExePath in ExePaths)
+                            KillProcess(ExePath);
+                        ProcessTime.Stop();
+                        Disable();
+                    }
                 }
+                else
+                {
+                    ProcessTime.Stop();
+                }
+                SaveLeftoverTime();
             }
-            else
-            {
-                ProcessTime.Stop();
-            }
-            SaveLeftoverTime();
         }
 
         /// <summary>
@@ -95,8 +101,8 @@ namespace chilco
         public void Disable()
         {
             this.IsDisabled = true;
-            foreach (string ExePath in ExePaths)
-                File.Move(ExePath, ExePath + ".disabled");
+            //foreach (string ExePath in ExePaths)
+                //File.Move(ExePath, ExePath + ".disabled");
         }
 
         /// <summary>
@@ -109,7 +115,7 @@ namespace chilco
             {
             foreach (string ExePath in ExePaths)
                 if (File.Exists(ExePath + ".disabled"))
-                    File.Move(ExePaths + ".disabled", ExePath);
+                    //File.Move(ExePaths + ".disabled", ExePath);
                     this.IsDisabled = false;
             }
         }
@@ -119,12 +125,16 @@ namespace chilco
         /// </summary>
         public void SaveLeftoverTime()
         {
-            if (!File.Exists(LogsPath + ProcessGroupName + ".txt"))
-                File.Create(LogsPath + ProcessGroupName + ".txt");
-            string[] output = new string[2];
-            output[0] = DateTime.Today.ToShortDateString();
-            output[1] = (LeftoverTime - ProcessTime.ElapsedMilliseconds) + "";
-            File.WriteAllLines(LogsPath + ProcessGroupName + ".txt", output);
+            string fileName = LogsPath + ProcessGroupName + ".txt";
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+            using (StreamWriter sw = File.CreateText(fileName))
+            {
+                sw.WriteLine(DateTime.Today.ToShortDateString());
+                sw.WriteLine((LeftoverTime - ProcessTime.ElapsedMilliseconds).ToString());
+            }
         }
 
         /// <summary>
@@ -132,26 +142,43 @@ namespace chilco
         /// </summary>
         public void LoadLeftoverTime()
         {
-            string[] file = File.ReadAllLines(LogsPath + ProcessGroupName + ".txt");
-            string[] date = file[0].Split('.');
-            DateTime LastStartup = new DateTime(Int32.Parse(date[2]), Int32.Parse(date[1]), Int32.Parse(date[0]));
-            TimeSpan TimeSinceLastStartup = DateTime.Today - LastStartup;
-            int DaysSinceLastStartup = TimeSinceLastStartup.Days;
-            Console.WriteLine("days " + DaysSinceLastStartup);
-            LeftoverTime = (DaysSinceLastStartup) * MaxPlaytime + Int32.Parse(file[1]);
+            try
+            {
+                string[] file = File.ReadAllLines(LogsPath + ProcessGroupName + ".txt");
+                string[] date = file[0].Split('.');
+                DateTime LastStartup = new DateTime(Int32.Parse(date[2]), Int32.Parse(date[1]), Int32.Parse(date[0]));
+                TimeSpan TimeSinceLastStartup = DateTime.Today - LastStartup;
+                int DaysSinceLastStartup = TimeSinceLastStartup.Days;
+                Console.WriteLine("days " + DaysSinceLastStartup);
+                LeftoverTime = (DaysSinceLastStartup) * MaxPlaytime + Int32.Parse(file[1]);
+            }
+            //HACK If the Program fucks up the kid cant play for the rest of the day (Leftovertime = 0)
+            catch(ArgumentOutOfRangeException) //If The date isnt in a correct date format.
+            {
+                SaveLeftoverTime();
+                LoadLeftoverTime();
+            }
+            //HACK If the Program fucks up the kid cant play for the rest of the day (Leftovertime = 0)
+            catch (FormatException)
+            {
+                SaveLeftoverTime();
+                LoadLeftoverTime();
+            }
         }
 
         /// <summary>
         /// checks if the processes are currently running
         /// </summary>
         /// <returns></returns>
-        public bool ExeIsRunning(string ExePath) => Process.GetProcessesByName(Path.GetFileName(ExePath)).Length > 0;
+        public bool ExeIsRunning(string ExePath) => Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ExePath)).Length > 0;
 
         public bool ExeAreRunning()
         {
             foreach (string ExePath in ExePaths)
+            {
                 if (ExeIsRunning(ExePath))
                     return true;
+            }
             return false;
         }
 
@@ -161,7 +188,7 @@ namespace chilco
         /// <param name="ExePath">Path to the .exe of the process to be killed</param>
         private void KillProcess(string ExePath)
         {
-            foreach (Process process in Process.GetProcessesByName(Path.GetFileName(ExePath)))
+            foreach (Process process in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(ExePath)))
             {
                 if (ExeIsRunning(ExePath))
                 {
