@@ -7,9 +7,9 @@ Features:
 
 [ ]Core
 
---[ ]Multiple programs.
+--[X]Multiple programs.
   
---[ ]Saving up playtime.
+--[X]Saving up playtime.
   
 --[ ]Limiter for saving up playtime.
   
